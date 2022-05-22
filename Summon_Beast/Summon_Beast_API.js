@@ -80,8 +80,8 @@ class BestialSpiritMutables {
 	*/
 	_determineType(type_provided) {
 		// Defines words that are associated with the beast type
-		const land_values = ["land", "earth", "ground", "walking"];
-		const air_values = ["air", "sky", "airborne", "flying", "flyer"];
+		const land_values = ["land", "earth", "ground", "walking", "walker"];
+		const air_values = ["air", "sky", "wind", "airborne", "flying", "flyer"];
 		const water_values = ["water", "ocean", "sea", "aquatic", "swimming", "swimmer"];
 
 		let type = type_provided.toLowerCase();
@@ -173,7 +173,7 @@ class BestialSpiritMutables {
 	:param sl: The level the Summon Beast spell is being cast at
 	*/
 	_determineDamageFormula(sl) {
-		this.damage_formula = "1d8 + " + (4 + sl);
+		this.damage_formula = "1d8+" + (4 + sl);
 	}
 }
 
@@ -182,15 +182,20 @@ class BestialSpiritMutables {
 Describes the details an attack action in an NPC character sheet.
 */
 class AttackParams {
-	constructor(type, range, to_hit, target, damage_1, element_1, damage_2, element_2) {
-			this.type = type;
-			this.range = range;
-			this.to_hit = to_hit;
-			this.target = target;
-			this.damage_1 = damage_1;
-			this.element_1 = element_1;
-			this.damage_2 = damage_2;
-			this.element_2 = element_2;
+	constructor(
+		id,
+		attack_damagetype = null, 
+		attack_range = null, 
+		attack_tohit = null, 
+		attack_target = null, 
+		attack_damage = null
+	) {
+		this.id = id;
+		this.attack_damagetype = attack_damagetype;
+		this.attack_range = attack_range;
+		this.attack_tohit = attack_tohit;
+		this.attack_target = attack_target;
+		this.attack_damage = attack_damage;
 	}
 }
 
@@ -199,14 +204,29 @@ class AttackParams {
 Describes an Action in an NPC character sheet.
 */
 class Action {
-	constructor(id, name, is_attack, attack_params, show_desc, desc, rollbase) {
-			this.id = id;
-			this.name = name;
-			this.is_attack = is_attack;
-			this.attack_params = attack_params;
-			this.show_desc = show_desc;
-			this.desc = desc;
-			this.rollbase = rollbase;
+	constructor(
+		id, 
+		name = null, 
+		attack_flag = null,
+		description = null,
+		attack_tohitrange = null,
+		attack_onhit = null,
+		damage_flag = null,
+		attack_crit = null,
+		attack_crit2 = null,
+		rollbase = null
+	) {
+		this.id = id;
+		this.name = name;
+		this.attack_flag = attack_flag;
+		this.attack_params = null;
+		this.description = description;
+		this.attack_tohitrange = attack_tohitrange;
+		this.attack_onhit = attack_onhit;
+		this.damage_flag = damage_flag;
+		this.attack_crit = attack_crit;
+		this.attack_crit2 = attack_crit2;
+		this.rollbase = rollbase;
 	}
 }
 
@@ -352,22 +372,48 @@ function processInput(input) {
 
 
 /*
+Update the actions associated with the Bestial Spirit
+:param actions: List of actions to update
+:param updated_attrs: Object containing the updated values
+*/
+function updateActions(actions, updated_attrs) {
+	_.each(actions, function(a) {
+		if (a.action.attack_params) {
+			if (a.action.name.get("current") === "Maul") {
+				a.attack_params.attack_damage.set("current", updated_attrs.damage_formula);
+				a.attack_params.attack_tohit.set("current", updated_attrs.hit_bonus);
+			}
+		} else {
+			if (a.action.name.get("current") === "Multiattack") {
+				a.action.description.set("current", updated_attrs.multiattack);
+			}
+		}
+	});
+};
+
+
+/*
 Uses provided data to update the details of the Bestial Spirit character sheet 
 associated with a present token.
 :param params: Object with info used to determine details of the Bestial Spirit
 */
 function updateBestialSpirit(params) {
-	const update_attrs = ["npc_name", "npc_ac", "hp", "npc_speed"];
-	const action_regex = /repeating_npcaction_.*_.*/;
+	const attrs_filter = ["npc_name", "npc_ac", "hp", "npc_speed"];
 	
-	let bs_m = new BestialSpiritMutables(params.type, 
+	// Regex for getting the actions of the Bestial Spirit
+	const action_regex = /repeating_npcaction_(.*?)_(.*)/;
+	
+	let action_param = null;
+	let actions = new Object();
+	
+	let updated_attrs = new BestialSpiritMutables(params.type, 
 		params.spell_level, 
 		params.spell_attack_bonus);
 	
-	// Get the attributes the Bestial Spirit
+	// Get the attributes and actions of the Bestial Spirit
 	let bs_attrs = _.filter(
 		findObjs({_characterid: bestial_spirit_id, _type: "attribute"}),
-		function(attr){return _.contains(update_attrs, attr.get("name")) 
+		function(attr){return _.contains(attrs_filter, attr.get("name")) 
 			|| _.size(attr.get("name").match(action_regex)) > 0}
 	);
 	
@@ -375,23 +421,47 @@ function updateBestialSpirit(params) {
 	_.each(bs_attrs, function(attr){			
 		switch(attr.get("name")) {
 			case "npc_name":
-				attr.set("current", "Bestial Spirit (" + bs_m.type + ")");
+				attr.set("current", "Bestial Spirit (" + updated_attrs.type + ")");
 				break;
 			case "npc_ac":
-				attr.set("current", bs_m.ac);
+				attr.set("current", updated_attrs.ac);
 				break;
 			case "hp":
-					attr.set("max", bs_m.hp);
-				attr.set("current", bs_m.hp);
+				attr.set("max", updated_attrs.hp);
+				attr.set("current", updated_attrs.hp);
 				break;
 			case "npc_speed":
-				attr.set("current", bs_m.speed);
+				attr.set("current", updated_attrs.speed);
 				break;
 			default:
 				// Gather the action attributes into thier own object
-				log(attr.get("name").split(action_regex));
+				action_param = action_regex.exec(attr.get("name"));
+				
+				if (!_.has(actions, action_param[1])) {
+					// Create new action set
+					actions[action_param[1]] = {
+						"action": new Action(action_param[1]), 
+						"attack_params": new AttackParams(action_param[1])
+					};
+				}
+				
+				if (_.has(actions[action_param[1]].attack_params, action_param[2])) {
+					// Set parameter for attack
+					actions[action_param[1]].attack_params[action_param[2]] = attr;
+					actions[action_param[1]].action.attack_params = actions[action_param[1]].attack_params;
+				} else {
+					// Set parameter for action
+					actions[action_param[1]].action[action_param[2]] = attr;
+				}
 		}
 	});
+	
+	// Update the actions
+	updateActions(actions, updated_attrs);
+	
+	displayMessage( '<p>'
+		+ 'The bestial spirit has been set.'
+		+ '</p>');
 };
 
 
