@@ -16,6 +16,7 @@ The API interfaces with a character sheet that represents the Bestial Spirit.
 The character sheet must be for an NPC with the name "Bestial Spirit".
 
 The character sheet needs an action for Multiattack and an attack action for Maul.
+
 ![actions-screenshot](https://github.com/Dave864/Roll20_API_Scripts/blob/main/Screen_Shots/bestial_spirit_actions.png "Needed Actions")
 
 :warning: The details of the actions will be changed when the API updates the Bestial Spirit.
