@@ -1,9 +1,9 @@
-/*
-Summon Beast API Script
-
-Command:
-!summon_beast <beast type> <level> <spell attack bonus>
-*/
+/**
+ * Summon Beast Roll API
+ *
+ * Created by David Macpherson
+ * 
+ */
 "use strict";
 
 // Constant describing what is sending chat messages related to this API
@@ -12,17 +12,18 @@ const SPEAKER = "Summon Beast API";
 let bestial_spirit_id = null;
 
 
-/*
-Describes the changeable values of the Bestial Spirit creature that is created by the Summon Beast spell.
-Does not include the challenge rating.
-*/
+/**
+ * Describes the changeable values of the Bestial Spirit creature that is
+ * created by the Summon Beast spell.
+ * Does not include the challenge rating.
+ */
 class BestialSpiritMutables {
-	/*
-	The constructor for the mutables.
-	:param type: The type of beast being summoned; defaults to "land"
-	:param sl: The level the Summon Beast spell is being cast at; defaults to 2
-	:param sab: The spell attack bonus of the caster; defaults to 2
-	*/
+	/**
+	 * The constructor for the mutables.
+	 * @param type The type of beast being summoned; defaults to "land"
+	 * @param sl The level the Summon Beast spell is being cast at; defaults to 2
+	 * @param sab The spell attack bonus of the caster; defaults to 2
+	 */
 	constructor(type = 'land', sl = 2, sab = 2) {
 		// Initialize the mutable variables
 		this.type = "";
@@ -36,12 +37,12 @@ class BestialSpiritMutables {
 		this.updateValues(type, Number(sl), Number(sab));
 	}
 
-	/*
-	Changes the mutable values based off of the provided type, spell level, and spell attack bonus.
-	:param type: The type of beast being summoned; defaults to "land"
-	:param sl: The level the Summon Beast spell is being cast at; defaults to 2
-	:param sab: The spell attack bonus of the caster; defaults to 2
-	*/
+	/**
+	 * Changes the mutable values based off of the provided type, spell level, and spell attack bonus.
+	 * @param type The type of beast being summoned; defaults to "land"
+	 * @param sl The level the Summon Beast spell is being cast at; defaults to 2
+	 * @param sab The spell attack bonus of the caster; defaults to 2
+	 */
 	updateValues(type = 'land', sl = 2, sab = 2) {
 		sl = this._boundedSpellLevel(sl);
 
@@ -54,12 +55,12 @@ class BestialSpiritMutables {
 		this._determineDamageFormula(sl);
 	}
 
-	/*
-	Determines the bounded value of the provided spell level, which is a number from 2 to 9.
-	The Summon Beast spell can only be cast using spell slots of level 2 or higher.
-	:param sl: The level the Summon Beast spell is being cast at
-	:return: The bounded value of the spell level
-	*/
+	/**
+	 * Determines the bounded value of the provided spell level, which is a number from 2 to 9.
+	 * The Summon Beast spell can only be cast using spell slots of level 2 or higher.
+	 * @param sl The level the Summon Beast spell is being cast at
+	 * @return The bounded value of the spell level
+	 */
 	_boundedSpellLevel(sl) {
 		let bounded_sl = sl;
 
@@ -72,12 +73,12 @@ class BestialSpiritMutables {
 		return bounded_sl;
 	}
 
-	/*
-	Determines the beast type based on the value provided.
-	The beast type can be either "land", "air", or "water".
-	Defaults to "land" if the provided value is not accounted for.
-	:param type_provided: The provided type 
-	*/
+	/**
+	 * Determines the beast type based on the value provided.
+	 * The beast type can be either "land", "air", or "water".
+	 * Defaults to "land" if the provided value is not accounted for.
+	 * @param type_provided The provided type 
+	 */
 	_determineType(type_provided) {
 		// Defines words that are associated with the beast type
 		const land_values = ["land", "earth", "ground", "walking", "walker"];
@@ -97,18 +98,18 @@ class BestialSpiritMutables {
 		}
 	}
 
-	/*
-	Calculates the AC based off of spell level.
-	:param sl: The level the Summon Beast spell is being cast at
-	*/
+	/**
+	 * Calculates the AC based off of spell level.
+	 * @param sl The level the Summon Beast spell is being cast at
+	 */
 	_calculateAC(sl) {
 		this.ac = 11 + sl;
 	}
 
-	/*
-	Calculates the HP based off of spell level and beast type.
-	:param sl: The level the Summon Beast spell is being cast at
-	*/
+	/**
+	 * Calculates the HP based off of spell level and beast type.
+	 * @param sl The level the Summon Beast spell is being cast at
+	 */
 	_calculateHP(sl) {
 		// Defaults to land
 		switch(this.type) {
@@ -126,9 +127,9 @@ class BestialSpiritMutables {
 		this.hp += 5 * sl;
 	}
 
-	/*
-	Determines the speed based off the beast type
-	*/
+	/**
+	 * Determines the speed based off the beast type
+	 */
 	_determineSpeed() {
 		this.speed = "30 ft.; "
 
@@ -148,10 +149,10 @@ class BestialSpiritMutables {
 		}
 	}
 
-	/*
-	Sets the multiattack description with the appropriate number of attacks.
-	:param sl: The level the Summon Beast spell is being cast at
-	*/
+	/**
+	 * Sets the multiattack description with the appropriate number of attacks.
+	 * @param sl The level the Summon Beast spell is being cast at
+	 */
 	_determineMultiattack(sl) {
 		let attack_count = Math.floor(sl / 2);
 
@@ -160,27 +161,27 @@ class BestialSpiritMutables {
 			: "The beast makes " + attack_count + " attack.";
 	}
 
-	/*
-	Sets the value of the hit bonus for the Maul attack.
-	:param sab: The spell attack bonus of the caster
-	*/
+	/**
+	 * Sets the value of the hit bonus for the Maul attack.
+	 * @param sab The spell attack bonus of the caster
+	 */
 	_setHitBonus(sab) {
 		this.hit_bonus = sab;
 	}
 
-	/*
-	Sets the damage calculation formula for the Maul attack.
-	:param sl: The level the Summon Beast spell is being cast at
-	*/
+	/**
+	 * Sets the damage calculation formula for the Maul attack.
+	 * @param sl The level the Summon Beast spell is being cast at
+	 */
 	_determineDamageFormula(sl) {
 		this.damage_formula = "1d8+" + (4 + sl);
 	}
 }
 
 
-/*
-Describes the details an attack action in an NPC character sheet.
-*/
+/**
+ *Describes the details an attack action in an NPC character sheet.
+ */
 class AttackParams {
 	constructor(
 		id,
@@ -200,9 +201,9 @@ class AttackParams {
 }
 
 
-/*
-Describes an Action in an NPC character sheet.
-*/
+/**
+ *Describes an Action in an NPC character sheet.
+ */
 class Action {
 	constructor(
 		id, 
@@ -231,11 +232,11 @@ class Action {
 }
 
 
-/*
-Display an error message related to the Summon Beast API to the Roll20 chat.
-:param description: Error description
-:param message: Message detailing the error
-*/
+/**
+ *Display an error message related to the Summon Beast API to the Roll20 chat.
+ *@param description Error description
+ *@param message Message detailing the error
+ */
 function displayError(description, message) {
 	msg = '<div style = "background-color: white; padding: 5px 10px; border: 1px solid black">'
 	+ '<p style = "color: white; font-weight: bold; font-size: 110%; background-color: red; padding: 5px 10px; border: 1px solid black">'
@@ -248,10 +249,10 @@ function displayError(description, message) {
 }
 
 
-/*
-Display a message related to the Summon Beast API to the Roll20 chat.
-:param message: Message to send to chat
-*/
+/**
+ *Display a message related to the Summon Beast API to the Roll20 chat.
+ *@param message Message to send to chat
+ */
 function displayMessage(message) {
 	msg = '<div style = "background-color: white; padding: 5px 10px; border: 1px solid green">'
 	+ message
@@ -261,12 +262,12 @@ function displayMessage(message) {
 }
 
 
-/*
-Interprets the provided Roll20 chat command and collects the provided parameters.
-:param input: The command entered into chat
-:return: Object containing the values of the passed in arguments; 
-returns null if the entered command cannot be processed
-*/
+/**
+ *Interprets the provided Roll20 chat command and collects the provided parameters.
+ *@param input The command entered into chat
+ *@return Object containing the values of the passed in arguments; 
+ *returns null if the entered command cannot be processed
+ */
 function processInput(input) {
   let command = _.clone(input), 
 	beast_type, 
@@ -371,11 +372,11 @@ function processInput(input) {
 };
 
 
-/*
-Update the actions associated with the Bestial Spirit
-:param actions: List of actions to update
-:param updated_attrs: Object containing the updated values
-*/
+/**
+ *Update the actions associated with the Bestial Spirit
+ *@param actions List of actions to update
+ *@param updated_attrs Object containing the updated values
+ */
 function updateActions(actions, updated_attrs) {
 	_.each(actions, function(a) {
 		if (a.action.attack_params) {
@@ -392,11 +393,11 @@ function updateActions(actions, updated_attrs) {
 };
 
 
-/*
-Uses provided data to update the details of the Bestial Spirit character sheet 
-associated with a present token.
-:param params: Object with info used to determine details of the Bestial Spirit
-*/
+/**
+ *Uses provided data to update the details of the Bestial Spirit character sheet 
+ *associated with a present token.
+ *@param params Object with info used to determine details of the Bestial Spirit
+ */
 function updateBestialSpirit(params) {
 	const attrs_filter = ["npc_name", "npc_ac", "hp", "npc_speed"];
 	
@@ -465,12 +466,12 @@ function updateBestialSpirit(params) {
 };
 
 
-/*
-Gets the character sheet id from the token used to represent the Bestial Spirit
-:param obj: The token object
-:return: id value of the reference character sheet; 
-null if the character sheet is not for Bestial Spirit
-*/
+/**
+ *Gets the character sheet id from the token used to represent the Bestial Spirit
+ *@param obj The token object
+ *@return id value of the reference character sheet; 
+ *null if the character sheet is not for Bestial Spirit
+ */
 function getBestialSpiritId(obj) {
 	let char = getObj("character", obj.get("represents"));
 	if (char !== undefined 
@@ -481,17 +482,17 @@ function getBestialSpiritId(obj) {
 };
 
 
-/*
-Sets up the api to watch for newly added graphics.
-*/
+/**
+ *Sets up the api to watch for newly added graphics.
+ */
 on("add:token", function(obj) {
 	bestial_spirit_id = getBestialSpiritId(obj);
 });
 
 
-/*
-Sets up the api to watch for destroyed graphics
-*/
+/**
+ *Sets up the api to watch for destroyed graphics
+ */
 on("destroy:token", function(obj) {
 	char_id = getBestialSpiritId(obj);
 	if (char_id) {
@@ -500,9 +501,9 @@ on("destroy:token", function(obj) {
 });
 
 
-/*
-Sets up the api to watch the Roll20 chat for the "summon-beast" command
-*/
+/**
+ *Sets up the api to watch the Roll20 chat for the "summon-beast" command
+ */
 on("chat:message", function(input) {
 	let parameters = processInput(input);
 	
