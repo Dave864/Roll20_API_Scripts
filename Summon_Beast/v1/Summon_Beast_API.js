@@ -471,9 +471,10 @@ Gets the character sheet id from the token used to represent the Bestial Spirit
 :return: id value of the reference character sheet; 
 null if the character sheet is not for Bestial Spirit
 */
-function getBestialSpiritId(obj) {	
+function getBestialSpiritId(obj) {
 	let char = getObj("character", obj.get("represents"));
-	if (char.get("name").toLowerCase().includes("bestial spirit")) {
+	if (char !== undefined 
+	    && char.get("name").toLowerCase().includes("bestial spirit")) {
 		return char.get("_id");
 	}
 	return null;
@@ -482,13 +483,9 @@ function getBestialSpiritId(obj) {
 
 /*
 Sets up the api to watch for newly added graphics.
-Nested within the ready event watcher to keep from adding 
-currently present tokens upon start up of campaign.
 */
-on("ready", function() {
-    on("add:token", function(obj) {
-        bestial_spirit_id = getBestialSpiritId(obj);
-    });
+on("add:token", function(obj) {
+	bestial_spirit_id = getBestialSpiritId(obj);
 });
 
 
