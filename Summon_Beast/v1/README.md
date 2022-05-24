@@ -16,7 +16,7 @@ The API interfaces with a character sheet that represents the Bestial Spirit.
 The character sheet must be for an NPC with the name "Bestial Spirit".
 
 The character sheet needs an action for Multiattack and an attack action for Maul.
-![actions-screenshot](..\..\Screen_Shots\bestial_spirit_actions.png?raw=true "Needed Actions")
+![actions-screenshot](https://github.com/Dave864/Roll20_API_Scripts/blob/main/Screen_Shots/bestial_spirit_actions.png "Needed Actions")
 
 :warning: The details of the actions will be changed when the API updates the Bestial Spirit.
 
@@ -45,25 +45,25 @@ A number indicating the level the Summon Beast spell was cast at.
 
 The Bestial Spirit character sheet will not update if there is no token present on a map that represents it.
 
-![missing-token](..\..\Screen_Shots\bestial_spirit_missing_token.png?raw=true "error message for missing token")
+![missing-token](https://github.com/Dave864/Roll20_API_Scripts/blob/main/Screen_Shots/bestial_spirit_missing_token.png "error message for missing token")
 
 ##### Missing Parameters
 
 The Bestial Spirit character sheet will not update if not all of the parameters were provided.
 
-![missing-arguments](..\..\Screen_Shots\bestial_spirit_missing_arguments.png?raw=true "error message for missing arguments")
+![missing-arguments](https://github.com/Dave864/Roll20_API_Scripts/blob/main/Screen_Shots/bestial_spirit_missing_arguments.png "error message for missing arguments")
 
 ##### Too Many Parameters
 
 The Bestial Spirit character sheet will not update if more than three parameters were provided.
 
-![too-many-arguments](..\..\Screen_Shots\bestial_spirit_too_many_arguments.png?raw=true "error message for too many arguments")
+![too-many-arguments](https://github.com/Dave864/Roll20_API_Scripts/blob/main/Screen_Shots/bestial_spirit_too_many_arguments.png "error message for too many arguments")
 
 ##### Invalid Parameters
 
 The Bestial Spirit character sheet will not update if any of the given parameters do not match the expected type.
 
-![invalid-arguments](..\..\Screen_Shots\bestial_spirit_invalid_arguments.png?raw=true "error message for invalid arguments")
+![invalid-arguments](https://github.com/Dave864/Roll20_API_Scripts/blob/main/Screen_Shots/bestial_spirit_invalid_arguments.png "error message for invalid arguments")
 
 ## Known Issues
 
